@@ -8,8 +8,8 @@ def load_lines(filepath):
         return f.read().splitlines()
 
 def main():
-    real_confession = load_lines(file_path+'real_confession.txt')
-    fake_confession = load_lines(file_path+'fake_confession.txt')
+    real_confession = load_lines(file_path+'confession_real.txt')
+    fake_confession = load_lines(file_path+'confession_fake.txt')
     real_table = find_collision.build_table(real_confession)
     fake_table = find_collision.build_table(fake_confession)
     collision = find_collision.find_collision(real_table, fake_table)
