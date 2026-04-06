@@ -1,11 +1,11 @@
 import hasher
 
-def build_table(lines, max_variants=2**16, num_suffix_chars=2):
+def build_table(lines, max_lines, num_suffix_chars=2, label=""):
     table = {}
-    lines = lines[:16] # Cap the analysis to 16 lines. 
-    for n in range(min(2 ** len(lines), max_variants)):
+    lines = lines[:max_lines] # Cap the analysis to max_lines lines.
+    for n in range(2 ** len(lines)):
         if n % 10000 == 0:
-            print(f"Building table: {n} / {min(2 ** len(lines), max_variants)} variants processed...")
+            print(f"Building table [{label}]: {n} / {min(2 ** len(lines), 2**max_lines)} variants processed...")
         variant = hasher.make_variant(lines, n)
         h = hasher.hash_variant(variant)
         suffix = h[-num_suffix_chars:]

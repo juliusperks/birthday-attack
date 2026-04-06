@@ -1,5 +1,6 @@
 import find_collision
 import argparse
+import subprocess
 
 file_path = './confessions/'
 
@@ -17,19 +18,23 @@ def main():
     real_confession = load_lines(file_path+'confession_real.txt')
     fake_confession = load_lines(file_path+'confession_fake.txt')
     print("Building hash tables...")
-    max_variants = 2**args.lines  # Limit the number of variants to generate for performance
     num_suffix_chars = args.digits  # Number of characters from the hash suffix to use for collision detection
-    real_table = find_collision.build_table(real_confession, max_variants=max_variants, num_suffix_chars=num_suffix_chars)
-    fake_table = find_collision.build_table(fake_confession, max_variants=max_variants, num_suffix_chars=num_suffix_chars)
+    real_table = find_collision.build_table(real_confession, max_lines=args.lines, num_suffix_chars=num_suffix_chars, label="real")
+    fake_table = find_collision.build_table(fake_confession, max_lines=args.lines, num_suffix_chars=num_suffix_chars, label="fake")
     print("Finding collision...")
     collision = find_collision.find_collision(real_table, fake_table)
     if collision:
         real_variant, fake_variant = collision
         print("Collision found!")
-        print("Real variant:")
-        print("\n".join(real_variant))
-        print("Fake variant:")
-        print("\n".join(fake_variant))
+        print("Outputting variants to files to output/...")
+        content = "\n".join(real_variant) + "\n"
+        with open("output/"+"output_real.txt", "wb") as f:
+            f.write(content.encode("ascii"))
+        content = "\n".join(fake_variant) + "\n"
+        with open("output/"+"output_fake.txt", "wb") as f:
+            f.write(content.encode("ascii"))
+        result = subprocess.run(["shasum", "-a", "256", "output/output_real.txt", "output/output_fake.txt"], capture_output=True, text=True)
+        print(result.stdout)
     else:
         print("No collision found.")
 
